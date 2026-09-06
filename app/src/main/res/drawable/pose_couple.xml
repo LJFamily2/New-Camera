@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Minimalist couple / two-people pose guide (two stick figures, joined hands). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="140dp"
+    android:height="200dp"
+    android:viewportWidth="140"
+    android:viewportHeight="200">
+
+    <!-- Shadow pass -->
+    <path
+        android:pathData="M30,20 A10,10 0 1,0 50,20 A10,10 0 1,0 30,20"
+        android:strokeColor="#66000000"
+        android:strokeWidth="6.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00000000" />
+    <path
+        android:pathData="M90,20 A10,10 0 1,0 110,20 A10,10 0 1,0 90,20"
+        android:strokeColor="#66000000"
+        android:strokeWidth="6.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00000000" />
+    <path
+        android:pathData="M40,30 L40,100 M100,30 L100,100"
+        android:strokeColor="#66000000"
+        android:strokeWidth="6.5"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000" />
+    <path
+        android:pathData="M22,50 L40,42 L58,55 M118,50 L100,42 L82,55"
+        android:strokeColor="#66000000"
+        android:strokeWidth="6.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00000000" />
+    <path
+        android:pathData="M58,55 L82,55"
+        android:strokeColor="#66000000"
+        android:strokeWidth="6.5"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000" />
+    <path
+        android:pathData="M25,160 L40,100 L55,160 M85,160 L100,100 L115,160"
+        android:strokeColor="#66000000"
+        android:strokeWidth="6.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00000000" />
+
+    <!-- Main white guide lines -->
+    <path
+        android:pathData="M30,20 A10,10 0 1,0 50,20 A10,10 0 1,0 30,20"
+        android:strokeColor="#F2FFFFFF"
+        android:strokeWidth="3.2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00000000" />
+    <path
+        android:pathData="M90,20 A10,10 0 1,0 110,20 A10,10 0 1,0 90,20"
+        android:strokeColor="#F2FFFFFF"
+        android:strokeWidth="3.2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00000000" />
+    <path
+        android:pathData="M40,30 L40,100 M100,30 L100,100"
+        android:strokeColor="#F2FFFFFF"
+        android:strokeWidth="3.2"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000" />
+    <path
+        android:pathData="M22,50 L40,42 L58,55 M118,50 L100,42 L82,55"
+        android:strokeColor="#F2FFFFFF"
+        android:strokeWidth="3.2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00000000" />
+    <path
+        android:pathData="M58,55 L82,55"
+        android:strokeColor="#F2FFFFFF"
+        android:strokeWidth="3.2"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000" />
+    <path
+        android:pathData="M25,160 L40,100 L55,160 M85,160 L100,100 L115,160"
+        android:strokeColor="#F2FFFFFF"
+        android:strokeWidth="3.2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00000000" />
+</vector>

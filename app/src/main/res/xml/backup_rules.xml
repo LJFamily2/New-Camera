@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Captured photos live in shared MediaStore, not app-private storage, so there is nothing app-specific to back up. -->
+</full-backup-content>
