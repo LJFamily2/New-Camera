@@ -1,64 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Minimalist sitting / casual pose guide (filled silhouette). -->
+<!-- Travel category: standing with one arm fully extended, pointing at a distant view (filled silhouette). -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="100dp"
+    android:width="120dp"
     android:height="200dp"
-    android:viewportWidth="100"
+    android:viewportWidth="120"
     android:viewportHeight="200">
 
     <!-- Shadow pass -->
     <path
-        android:pathData="M34,51 A16,16 0 0,1 66,51 L66,78 A16,16 0 0,1 34,78 Z"
+        android:pathData="M29,48 A16,16 0 0,1 61,48 L61,91 A16,16 0 0,1 29,91 Z"
         android:fillColor="#66000000" />
     <path
-        android:pathData="M35,25 A15,15 0 1,0 65,25 A15,15 0 1,0 35,25"
+        android:pathData="M31,20 A14,14 0 1,0 59,20 A14,14 0 1,0 31,20"
         android:fillColor="#66000000" />
     <path
-        android:pathData="M28,58 L50,50 L72,58"
+        android:pathData="M45,50 L80,42 L108,35"
         android:strokeColor="#66000000"
         android:strokeWidth="10"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
         android:fillColor="#00000000" />
     <path
-        android:pathData="M18,112 L50,92 L82,112"
+        android:pathData="M43,55 L35,75 L33,90"
         android:strokeColor="#66000000"
         android:strokeWidth="10"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
         android:fillColor="#00000000" />
     <path
-        android:pathData="M18,112 L14,172 M82,112 L86,172"
+        android:pathData="M35,178 L45,105 L55,178"
         android:strokeColor="#66000000"
         android:strokeWidth="10"
         android:strokeLineCap="round"
+        android:strokeLineJoin="round"
         android:fillColor="#00000000" />
 
     <!-- Main white guide silhouette -->
     <path
-        android:pathData="M37,50 A13,13 0 0,1 63,50 L63,79 A13,13 0 0,1 37,79 Z"
+        android:pathData="M32,47 A13,13 0 0,1 58,47 L58,92 A13,13 0 0,1 32,92 Z"
         android:fillColor="#F2FFFFFF" />
     <path
-        android:pathData="M38,25 A12,12 0 1,0 62,25 A12,12 0 1,0 38,25"
+        android:pathData="M33,20 A12,12 0 1,0 57,20 A12,12 0 1,0 33,20"
         android:fillColor="#F2FFFFFF" />
     <path
-        android:pathData="M28,58 L50,50 L72,58"
+        android:pathData="M45,50 L80,42 L108,35"
         android:strokeColor="#F2FFFFFF"
         android:strokeWidth="6.5"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
         android:fillColor="#00000000" />
     <path
-        android:pathData="M18,112 L50,92 L82,112"
+        android:pathData="M43,55 L35,75 L33,90"
         android:strokeColor="#F2FFFFFF"
         android:strokeWidth="6.5"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
         android:fillColor="#00000000" />
     <path
-        android:pathData="M18,112 L14,172 M82,112 L86,172"
+        android:pathData="M35,178 L45,105 L55,178"
         android:strokeColor="#F2FFFFFF"
         android:strokeWidth="6.5"
         android:strokeLineCap="round"
+        android:strokeLineJoin="round"
         android:fillColor="#00000000" />
 </vector>

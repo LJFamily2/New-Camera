@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Beach category: standing S-curve pose with a hand on the hip, weight on one leg. -->
+<!-- Beach category: standing S-curve pose with a hand on the hip (filled silhouette). -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="100dp"
     android:height="200dp"
@@ -8,82 +8,74 @@
 
     <!-- Shadow pass -->
     <path
-        android:pathData="M39,20 A11,11 0 1,0 61,20 A11,11 0 1,0 39,20"
-        android:strokeColor="#66000000"
-        android:strokeWidth="7"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:fillColor="#00000000" />
-    <path
         android:pathData="M50,31 C55,45 42,60 48,95"
         android:strokeColor="#66000000"
-        android:strokeWidth="7"
+        android:strokeWidth="17"
         android:strokeLineCap="round"
         android:fillColor="#00000000" />
+    <path
+        android:pathData="M36,20 A14,14 0 1,0 64,20 A14,14 0 1,0 36,20"
+        android:fillColor="#66000000" />
     <path
         android:pathData="M50,45 L65,55 L60,70"
         android:strokeColor="#66000000"
-        android:strokeWidth="7"
+        android:strokeWidth="10"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
         android:fillColor="#00000000" />
     <path
         android:pathData="M46,50 L38,75"
         android:strokeColor="#66000000"
-        android:strokeWidth="7"
+        android:strokeWidth="10"
         android:strokeLineCap="round"
         android:fillColor="#00000000" />
     <path
         android:pathData="M48,95 L35,175"
         android:strokeColor="#66000000"
-        android:strokeWidth="7"
+        android:strokeWidth="10"
         android:strokeLineCap="round"
         android:fillColor="#00000000" />
     <path
         android:pathData="M48,95 L62,140 L58,175"
         android:strokeColor="#66000000"
-        android:strokeWidth="7"
+        android:strokeWidth="10"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
         android:fillColor="#00000000" />
 
-    <!-- Main white guide lines -->
-    <path
-        android:pathData="M39,20 A11,11 0 1,0 61,20 A11,11 0 1,0 39,20"
-        android:strokeColor="#F2FFFFFF"
-        android:strokeWidth="3.5"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:fillColor="#00000000" />
+    <!-- Main white guide silhouette -->
     <path
         android:pathData="M50,31 C55,45 42,60 48,95"
         android:strokeColor="#F2FFFFFF"
-        android:strokeWidth="3.5"
+        android:strokeWidth="12"
         android:strokeLineCap="round"
         android:fillColor="#00000000" />
     <path
+        android:pathData="M38,20 A12,12 0 1,0 62,20 A12,12 0 1,0 38,20"
+        android:fillColor="#F2FFFFFF" />
+    <path
         android:pathData="M50,45 L65,55 L60,70"
         android:strokeColor="#F2FFFFFF"
-        android:strokeWidth="3.5"
+        android:strokeWidth="6.5"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
         android:fillColor="#00000000" />
     <path
         android:pathData="M46,50 L38,75"
         android:strokeColor="#F2FFFFFF"
-        android:strokeWidth="3.5"
+        android:strokeWidth="6.5"
         android:strokeLineCap="round"
         android:fillColor="#00000000" />
     <path
         android:pathData="M48,95 L35,175"
         android:strokeColor="#F2FFFFFF"
-        android:strokeWidth="3.5"
+        android:strokeWidth="6.5"
         android:strokeLineCap="round"
         android:fillColor="#00000000" />
     <path
         android:pathData="M48,95 L62,140 L58,175"
         android:strokeColor="#F2FFFFFF"
-        android:strokeWidth="3.5"
+        android:strokeWidth="6.5"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
         android:fillColor="#00000000" />

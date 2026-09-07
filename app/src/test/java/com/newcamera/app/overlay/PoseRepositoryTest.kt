@@ -11,7 +11,12 @@ class PoseRepositoryTest {
     @Test
     fun `bundles a healthy variety of distinct poses`() {
         val poses = PoseRepository.poses
-        assertTrue("expected at least 10 poses, found ${poses.size}", poses.size >= 10)
+        assertTrue("expected at least 18 poses, found ${poses.size}", poses.size >= 18)
+    }
+
+    @Test
+    fun `covers at least eight categories`() {
+        assertTrue(PoseCategory.entries.size >= 8)
     }
 
     @Test

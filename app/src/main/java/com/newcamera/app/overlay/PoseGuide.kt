@@ -8,7 +8,11 @@ enum class PoseCategory(@StringRes val labelRes: Int) {
     STUDIO(R.string.pose_category_studio),
     BEACH(R.string.pose_category_beach),
     MOUNTAIN(R.string.pose_category_mountain),
-    GROUP(R.string.pose_category_group)
+    GROUP(R.string.pose_category_group),
+    FASHION(R.string.pose_category_fashion),
+    URBAN(R.string.pose_category_urban),
+    TRAVEL(R.string.pose_category_travel),
+    CAFE(R.string.pose_category_cafe)
 }
 
 data class PoseGuide(
@@ -37,7 +41,15 @@ object PoseRepository {
             PoseGuide("summit_overlook", "Summit", PoseCategory.MOUNTAIN, R.drawable.pose_summit_overlook),
             PoseGuide("trail_sit", "Trail Sit", PoseCategory.MOUNTAIN, R.drawable.pose_trail_sit),
             PoseGuide("couple", "Couple", PoseCategory.GROUP, R.drawable.pose_couple),
-            PoseGuide("group_selfie", "Group Selfie", PoseCategory.GROUP, R.drawable.pose_group_selfie)
+            PoseGuide("group_selfie", "Group Selfie", PoseCategory.GROUP, R.drawable.pose_group_selfie),
+            PoseGuide("street_walk", "Street Walk", PoseCategory.FASHION, R.drawable.pose_street_walk),
+            PoseGuide("wall_lean", "Wall Lean", PoseCategory.FASHION, R.drawable.pose_wall_lean),
+            PoseGuide("railing_lean", "Railing Lean", PoseCategory.URBAN, R.drawable.pose_railing_lean),
+            PoseGuide("phone_candid", "Phone Call", PoseCategory.URBAN, R.drawable.pose_phone_candid),
+            PoseGuide("point_at_view", "Point at View", PoseCategory.TRAVEL, R.drawable.pose_point_at_view),
+            PoseGuide("overhead_jump", "Jump Shot", PoseCategory.TRAVEL, R.drawable.pose_overhead_jump),
+            PoseGuide("coffee_sip", "Coffee Sip", PoseCategory.CAFE, R.drawable.pose_coffee_sip),
+            PoseGuide("book_read", "Book Read", PoseCategory.CAFE, R.drawable.pose_book_read)
         )
     }
 

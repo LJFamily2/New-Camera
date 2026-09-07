@@ -28,16 +28,20 @@ guides found in phone camera apps such as Xiaomi's.
   (a `ScaleGestureDetector` combined with the existing tap-to-focus listener) plus a 1x/2x pill
   row driven by `CameraInfo.zoomState`/`CameraControl.setZoomRatio`; the 2x pill only appears
   when the active lens actually supports it.
-- **Pose guide overlay**: 12 bundled minimalist stick-figure silhouettes across four categories
-  — **Studio** (Full Body, Portrait, Sitting, Action, Yoga), **Beach** (Beach Sit, Lookback,
-  Sunset), **Mountain** (Summit, Trail Sit), and **Group** (Couple, Group Selfie) — filterable
-  via a category chip row, picked from a horizontally scrollable thumbnail strip above the
-  shutter. The Beach/Mountain/Group poses are original silhouette compositions inspired by
-  common posing ideas (candid seated shots, golden-hour portraits, overhead group selfies), not
-  copies of any specific photo. The guide can be dragged and pinch-zoomed to align with the
-  subject, and its opacity is adjustable via a slider. The overlay is drawn purely on a Compose
-  canvas layer above `PreviewView` — it is never part of the `ImageCapture` pipeline, so it can
-  never end up baked into a saved photo.
+- **Pose guide overlay**: 20 bundled pose guides across eight categories — **Studio** (Full
+  Body, Portrait, Sitting, Action, Yoga), **Beach** (Beach Sit, Lookback, Sunset), **Mountain**
+  (Summit, Trail Sit), **Group** (Couple, Group Selfie), **Fashion** (Street Walk, Wall Lean),
+  **Urban** (Railing Lean, Phone Call), **Travel** (Point at View, Jump Shot), and **Cafe**
+  (Coffee Sip, Book Read) — filterable via a category chip row, picked from a horizontally
+  scrollable thumbnail strip above the shutter. Each guide is a **filled silhouette** (a solid
+  head, a solid tapered torso, thick rounded limbs) rather than a thin stick figure, since a
+  body-shaped silhouette reads at a glance while wireframe lines don't; all of it is original
+  vector art authored for this app, not photos — using real photos of real people as in-app
+  assets would need a license this project doesn't have, and this app never fetches or embeds
+  any web content into its asset bundle. The guide can be dragged and pinch-zoomed to align with
+  the subject, and its opacity is adjustable via a slider. The overlay is drawn purely on a
+  Compose canvas layer above `PreviewView` — it is never part of the `ImageCapture` pipeline, so
+  it can never end up baked into a saved photo.
 - **MediaStore saving**: JPEGs are written to `DCIM/Camera` via MediaStore, bridging the
   scoped-storage API (Q+) and the legacy `DATA`-column API (26–28), since minSdk is 26.
   CameraX handles JPEG EXIF orientation automatically; an `OrientationEventListener` keeps
@@ -111,9 +115,9 @@ Gradle wrapper (Gradle 8.7, AGP 8.5.2, Kotlin 2.0.21).
 - **Unit tests** (`app/src/test`, no device needed): `PoseOverlayStateTest` (pan/zoom/opacity
   math and clamping), `FlashModeTest` (cycling + mapping to `ImageCapture` constants),
   `CaptureTimerTest` (Off/3s/10s cycling), `CaptureAspectRatioTest` (Full/4:3/1:1 cycling,
-  CameraX mapping, square-crop flag), `PoseRepositoryTest` (pose bundle integrity + category
-  filtering), `FileNamingTest` (filename format), `PermissionUtilsTest` (pre/post API 29
-  permission set).
+  CameraX mapping, square-crop flag), `PoseRepositoryTest` (pose bundle integrity, all 8
+  categories populated, category filtering), `FileNamingTest` (filename format),
+  `PermissionUtilsTest` (pre/post API 29 permission set).
 - **Instrumented tests** (`app/src/androidTest`, needs a device/emulator):
   `CameraScreenUiTest` (shutter/switch controls exist, pose selector shows entries, selecting
   a pose reveals the opacity slider), `MediaStoreUtilsInstrumentedTest` (ContentValues are
