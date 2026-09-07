@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Mountain category: sitting on a ledge/rock with legs dangling over the edge. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="160dp"
+    android:viewportWidth="100"
+    android:viewportHeight="160">
+
+    <!-- Shadow pass -->
+    <path
+        android:pathData="M39,25 A11,11 0 1,0 61,25 A11,11 0 1,0 39,25"
+        android:strokeColor="#66000000"
+        android:strokeWidth="7"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00000000" />
+    <path
+        android:pathData="M50,36 L50,75"
+        android:strokeColor="#66000000"
+        android:strokeWidth="7"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000" />
+    <path
+        android:pathData="M30,55 L50,60 L70,55"
+        android:strokeColor="#66000000"
+        android:strokeWidth="7"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00000000" />
+    <path
+        android:pathData="M50,75 L40,150 M50,75 L60,150"
+        android:strokeColor="#66000000"
+        android:strokeWidth="7"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000" />
+    <path
+        android:pathData="M10,80 L90,80"
+        android:strokeColor="#66000000"
+        android:strokeWidth="7"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000" />
+
+    <!-- Main white guide lines -->
+    <path
+        android:pathData="M39,25 A11,11 0 1,0 61,25 A11,11 0 1,0 39,25"
+        android:strokeColor="#F2FFFFFF"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00000000" />
+    <path
+        android:pathData="M50,36 L50,75"
+        android:strokeColor="#F2FFFFFF"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000" />
+    <path
+        android:pathData="M30,55 L50,60 L70,55"
+        android:strokeColor="#F2FFFFFF"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00000000" />
+    <path
+        android:pathData="M50,75 L40,150 M50,75 L60,150"
+        android:strokeColor="#F2FFFFFF"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000" />
+    <path
+        android:pathData="M10,80 L90,80"
+        android:strokeColor="#F2FFFFFF"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000" />
+</vector>

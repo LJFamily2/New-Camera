@@ -1,6 +1,7 @@
 package com.newcamera.app.ui
 
 import android.view.MotionEvent
+import android.view.ScaleGestureDetector
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -31,10 +32,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.newcamera.app.camera.CameraViewModel
 import com.newcamera.app.camera.CaptureResult
+import com.newcamera.app.overlay.PoseCategory
 import com.newcamera.app.overlay.PoseGuide
 import com.newcamera.app.overlay.PoseOverlay
 import com.newcamera.app.overlay.PoseOverlayState
 import com.newcamera.app.overlay.PoseRepository
+import kotlinx.coroutines.delay
 
 @Composable
 fun CameraScreen(viewModel: CameraViewModel = viewModel(), modifier: Modifier = Modifier) {
@@ -49,7 +52,9 @@ fun CameraScreen(viewModel: CameraViewModel = viewModel(), modifier: Modifier = 
         }
     }
 
-    LaunchedEffect(uiState.lensFacing) {
+    // Aspect ratio changes require rebuilding ImageCapture with a new target ratio, so a rebind
+    // is keyed on it too, alongside lens facing.
+    LaunchedEffect(uiState.lensFacing, uiState.captureAspectRatio) {
         viewModel.bindToLifecycle(context, lifecycleOwner, previewView)
     }
 
@@ -61,6 +66,34 @@ fun CameraScreen(viewModel: CameraViewModel = viewModel(), modifier: Modifier = 
     // zooming the guide never triggers a camera rebind and switching cameras never resets it.
     var selectedPose by remember { mutableStateOf<PoseGuide?>(null) }
     var overlayState by remember { mutableStateOf(PoseOverlayState()) }
+    var selectedCategory by remember { mutableStateOf<PoseCategory?>(null) }
+
+    // Self-timer countdown is transient UI state, not camera state - it doesn't need to
+    // survive process death and never touches the ViewModel until it fires the capture.
+    var countdownSeconds by remember { mutableStateOf<Int?>(null) }
+    LaunchedEffect(countdownSeconds) {
+        val remaining = countdownSeconds ?: return@LaunchedEffect
+        if (remaining <= 0) {
+            countdownSeconds = null
+            viewModel.capturePhoto(context)
+        } else {
+            delay(1000)
+            countdownSeconds = remaining - 1
+        }
+    }
+
+    val scaleGestureDetector = remember {
+        ScaleGestureDetector(
+            context,
+            object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+                override fun onScale(detector: ScaleGestureDetector): Boolean {
+                    val current = viewModel.uiState.value
+                    viewModel.setZoomRatio(current.zoomRatio * detector.scaleFactor)
+                    return true
+                }
+            }
+        )
+    }
 
     val snackbarHostState = remember { SnackbarHostState() }
     LaunchedEffect(uiState.lastCaptureResult) {
@@ -82,7 +115,8 @@ fun CameraScreen(viewModel: CameraViewModel = viewModel(), modifier: Modifier = 
             factory = {
                 previewView.apply {
                     setOnTouchListener { view, event ->
-                        if (event.action == MotionEvent.ACTION_UP) {
+                        scaleGestureDetector.onTouchEvent(event)
+                        if (event.action == MotionEvent.ACTION_UP && !scaleGestureDetector.isInProgress) {
                             viewModel.focusAndMeterAt(this, event.x, event.y)
                             view.performClick()
                         }
@@ -93,6 +127,15 @@ fun CameraScreen(viewModel: CameraViewModel = viewModel(), modifier: Modifier = 
             modifier = Modifier.fillMaxSize()
         )
 
+        if (uiState.isGridEnabled) {
+            GridOverlay(modifier = Modifier.fillMaxSize())
+        }
+
+        AspectRatioMask(
+            widthToHeightRatio = uiState.captureAspectRatio.widthToHeightRatio,
+            modifier = Modifier.fillMaxSize()
+        )
+
         PoseOverlay(
             pose = selectedPose,
             state = overlayState,
@@ -100,11 +143,25 @@ fun CameraScreen(viewModel: CameraViewModel = viewModel(), modifier: Modifier = 
             modifier = Modifier.fillMaxSize()
         )
 
+        TimerCountdownOverlay(secondsRemaining = countdownSeconds, modifier = Modifier.fillMaxSize())
+
         SnackbarHost(
             hostState = snackbarHostState,
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(top = 16.dp)
+        )
+
+        TopOptionsBar(
+            isGridEnabled = uiState.isGridEnabled,
+            onToggleGrid = viewModel::toggleGrid,
+            timer = uiState.timer,
+            onCycleTimer = viewModel::cycleTimer,
+            aspectRatio = uiState.captureAspectRatio,
+            onCycleAspectRatio = viewModel::cycleAspectRatio,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(top = 16.dp, end = 16.dp)
         )
 
         Column(modifier = Modifier.align(Alignment.BottomCenter)) {
@@ -127,8 +184,15 @@ fun CameraScreen(viewModel: CameraViewModel = viewModel(), modifier: Modifier = 
                     .padding(vertical = 12.dp)
             ) {
                 Column {
+                    PoseCategoryChipRow(
+                        selectedCategory = selectedCategory,
+                        onCategorySelected = { selectedCategory = it }
+                    )
+
+                    Spacer(Modifier.height(8.dp))
+
                     PoseSelectorRow(
-                        poses = PoseRepository.poses,
+                        poses = PoseRepository.byCategory(selectedCategory),
                         selectedPoseId = selectedPose?.id,
                         onPoseSelected = { pose ->
                             selectedPose = pose
@@ -136,7 +200,17 @@ fun CameraScreen(viewModel: CameraViewModel = viewModel(), modifier: Modifier = 
                         }
                     )
 
-                    Spacer(Modifier.height(20.dp))
+                    Spacer(Modifier.height(16.dp))
+
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        ZoomPillRow(
+                            currentZoomRatio = uiState.zoomRatio,
+                            maxZoomRatio = uiState.maxZoomRatio,
+                            onZoomSelected = viewModel::setZoomRatio
+                        )
+                    }
+
+                    Spacer(Modifier.height(12.dp))
 
                     Box(
                         modifier = Modifier
@@ -152,8 +226,14 @@ fun CameraScreen(viewModel: CameraViewModel = viewModel(), modifier: Modifier = 
                         }
 
                         ShutterButton(
-                            isCapturing = uiState.isCapturing,
-                            onClick = { viewModel.capturePhoto(context) },
+                            isCapturing = uiState.isCapturing || countdownSeconds != null,
+                            onClick = {
+                                if (uiState.timer.seconds == 0) {
+                                    viewModel.capturePhoto(context)
+                                } else {
+                                    countdownSeconds = uiState.timer.seconds
+                                }
+                            },
                             modifier = Modifier.align(Alignment.Center)
                         )
 

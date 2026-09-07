@@ -16,12 +16,16 @@ import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.newcamera.app.util.FileNaming
+import com.newcamera.app.util.ImageCropUtils
 import com.newcamera.app.util.MediaStoreUtils
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 sealed interface CaptureResult {
@@ -36,6 +40,12 @@ data class CameraUiState(
     val hasFrontCamera: Boolean = true,
     val hasBackCamera: Boolean = true,
     val hasFlashUnit: Boolean = true,
+    val captureAspectRatio: CaptureAspectRatio = CaptureAspectRatio.FULL,
+    val timer: CaptureTimer = CaptureTimer.OFF,
+    val isGridEnabled: Boolean = false,
+    val zoomRatio: Float = 1f,
+    val minZoomRatio: Float = 1f,
+    val maxZoomRatio: Float = 1f,
     val lastCaptureResult: CaptureResult? = null
 )
 
@@ -75,10 +85,13 @@ class CameraViewModel : ViewModel() {
             it.surfaceProvider = previewView.surfaceProvider
         }
 
-        val capture = ImageCapture.Builder()
+        val captureBuilder = ImageCapture.Builder()
             .setFlashMode(_uiState.value.flashMode.toImageCaptureFlashMode())
             .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-            .build()
+        _uiState.value.captureAspectRatio.toCameraXAspectRatio()?.let { ratio ->
+            captureBuilder.setTargetAspectRatio(ratio)
+        }
+        val capture = captureBuilder.build()
         imageCapture = capture
 
         val selector = CameraSelector.Builder()
@@ -86,9 +99,20 @@ class CameraViewModel : ViewModel() {
             .build()
 
         provider.unbindAll()
-        camera = provider.bindToLifecycle(lifecycleOwner, selector, preview, capture)
+        val boundCamera = provider.bindToLifecycle(lifecycleOwner, selector, preview, capture)
+        camera = boundCamera
 
-        _uiState.update { it.copy(hasFlashUnit = camera?.cameraInfo?.hasFlashUnit() ?: false) }
+        _uiState.update { it.copy(hasFlashUnit = boundCamera.cameraInfo.hasFlashUnit()) }
+
+        boundCamera.cameraInfo.zoomState.observe(lifecycleOwner) { zoomState ->
+            _uiState.update {
+                it.copy(
+                    zoomRatio = zoomState.zoomRatio,
+                    minZoomRatio = zoomState.minZoomRatio,
+                    maxZoomRatio = zoomState.maxZoomRatio
+                )
+            }
+        }
 
         startOrientationListener(context)
     }
@@ -110,6 +134,24 @@ class CameraViewModel : ViewModel() {
             imageCapture?.flashMode = next.toImageCaptureFlashMode()
             current.copy(flashMode = next)
         }
+    }
+
+    fun cycleAspectRatio() {
+        _uiState.update { it.copy(captureAspectRatio = it.captureAspectRatio.next()) }
+    }
+
+    fun cycleTimer() {
+        _uiState.update { it.copy(timer = it.timer.next()) }
+    }
+
+    fun toggleGrid() {
+        _uiState.update { it.copy(isGridEnabled = !it.isGridEnabled) }
+    }
+
+    fun setZoomRatio(ratio: Float) {
+        val state = _uiState.value
+        val clamped = ratio.coerceIn(state.minZoomRatio, state.maxZoomRatio)
+        camera?.cameraControl?.setZoomRatio(clamped)
     }
 
     fun focusAndMeterAt(previewView: PreviewView, x: Float, y: Float) {
@@ -141,14 +183,22 @@ class CameraViewModel : ViewModel() {
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val savedUri = output.savedUri
-                    if (savedUri != null) {
-                        MediaStoreUtils.markImageComplete(context, savedUri)
-                    }
-                    _uiState.update {
-                        it.copy(
-                            isCapturing = false,
-                            lastCaptureResult = CaptureResult.Success(savedUri ?: Uri.EMPTY)
-                        )
+                    val requiresSquareCrop = _uiState.value.captureAspectRatio.requiresSquareCrop
+                    // Cropping decodes/re-encodes the full JPEG, so it's kept off the main thread
+                    // that this save callback runs on.
+                    viewModelScope.launch(Dispatchers.IO) {
+                        if (savedUri != null) {
+                            if (requiresSquareCrop) {
+                                runCatching { ImageCropUtils.cropToSquare(context.contentResolver, savedUri) }
+                            }
+                            MediaStoreUtils.markImageComplete(context, savedUri)
+                        }
+                        _uiState.update {
+                            it.copy(
+                                isCapturing = false,
+                                lastCaptureResult = CaptureResult.Success(savedUri ?: Uri.EMPTY)
+                            )
+                        }
                     }
                 }
 

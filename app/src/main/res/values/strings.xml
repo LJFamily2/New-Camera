@@ -7,8 +7,16 @@
     <string name="capture_saved">Photo saved</string>
     <string name="capture_failed">Capture failed: %1$s</string>
     <string name="pose_none">None</string>
+    <string name="pose_category_all">All</string>
+    <string name="pose_category_studio">Studio</string>
+    <string name="pose_category_beach">Beach</string>
+    <string name="pose_category_mountain">Mountain</string>
+    <string name="pose_category_group">Group</string>
     <string name="content_desc_shutter">Take photo</string>
     <string name="content_desc_switch_camera">Switch camera</string>
     <string name="content_desc_flash">Flash mode: %1$s</string>
     <string name="content_desc_opacity">Guide opacity</string>
+    <string name="content_desc_grid">Grid lines</string>
+    <string name="content_desc_timer">Self-timer: %1$ds</string>
+    <string name="content_desc_aspect_ratio">Aspect ratio: %1$s</string>
 </resources>

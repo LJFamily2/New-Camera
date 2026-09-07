@@ -9,9 +9,23 @@ import org.junit.Test
 class PoseRepositoryTest {
 
     @Test
-    fun `bundles at least five distinct poses`() {
+    fun `bundles a healthy variety of distinct poses`() {
         val poses = PoseRepository.poses
-        assertTrue("expected 5-7 poses, found ${poses.size}", poses.size in 5..7)
+        assertTrue("expected at least 10 poses, found ${poses.size}", poses.size >= 10)
+    }
+
+    @Test
+    fun `every category has at least one pose`() {
+        PoseCategory.entries.forEach { category ->
+            val posesInCategory = PoseRepository.byCategory(category)
+            assertTrue("expected at least one pose in $category", posesInCategory.isNotEmpty())
+            assertTrue(posesInCategory.all { it.category == category })
+        }
+    }
+
+    @Test
+    fun `byCategory with null returns every pose`() {
+        assertEquals(PoseRepository.poses.size, PoseRepository.byCategory(null).size)
     }
 
     @Test

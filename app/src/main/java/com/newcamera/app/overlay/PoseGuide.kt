@@ -1,11 +1,20 @@
 package com.newcamera.app.overlay
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import com.newcamera.app.R
+
+enum class PoseCategory(@StringRes val labelRes: Int) {
+    STUDIO(R.string.pose_category_studio),
+    BEACH(R.string.pose_category_beach),
+    MOUNTAIN(R.string.pose_category_mountain),
+    GROUP(R.string.pose_category_group)
+}
 
 data class PoseGuide(
     val id: String,
     val displayName: String,
+    val category: PoseCategory,
     @DrawableRes val iconRes: Int
 )
 
@@ -17,14 +26,23 @@ data class PoseGuide(
 object PoseRepository {
     val poses: List<PoseGuide> by lazy {
         listOf(
-            PoseGuide("full_body", "Full Body", R.drawable.pose_full_body),
-            PoseGuide("portrait", "Portrait", R.drawable.pose_portrait),
-            PoseGuide("sitting", "Sitting", R.drawable.pose_sitting),
-            PoseGuide("couple", "Couple", R.drawable.pose_couple),
-            PoseGuide("action", "Action", R.drawable.pose_action),
-            PoseGuide("yoga", "Yoga", R.drawable.pose_yoga)
+            PoseGuide("full_body", "Full Body", PoseCategory.STUDIO, R.drawable.pose_full_body),
+            PoseGuide("portrait", "Portrait", PoseCategory.STUDIO, R.drawable.pose_portrait),
+            PoseGuide("sitting", "Sitting", PoseCategory.STUDIO, R.drawable.pose_sitting),
+            PoseGuide("action", "Action", PoseCategory.STUDIO, R.drawable.pose_action),
+            PoseGuide("yoga", "Yoga", PoseCategory.STUDIO, R.drawable.pose_yoga),
+            PoseGuide("beach_candid_sit", "Beach Sit", PoseCategory.BEACH, R.drawable.pose_beach_candid_sit),
+            PoseGuide("tropical_lookback", "Lookback", PoseCategory.BEACH, R.drawable.pose_tropical_lookback),
+            PoseGuide("sunset_silhouette", "Sunset", PoseCategory.BEACH, R.drawable.pose_sunset_silhouette),
+            PoseGuide("summit_overlook", "Summit", PoseCategory.MOUNTAIN, R.drawable.pose_summit_overlook),
+            PoseGuide("trail_sit", "Trail Sit", PoseCategory.MOUNTAIN, R.drawable.pose_trail_sit),
+            PoseGuide("couple", "Couple", PoseCategory.GROUP, R.drawable.pose_couple),
+            PoseGuide("group_selfie", "Group Selfie", PoseCategory.GROUP, R.drawable.pose_group_selfie)
         )
     }
 
     fun findById(id: String?): PoseGuide? = poses.firstOrNull { it.id == id }
+
+    fun byCategory(category: PoseCategory?): List<PoseGuide> =
+        if (category == null) poses else poses.filter { it.category == category }
 }

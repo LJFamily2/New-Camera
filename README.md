@@ -20,12 +20,24 @@ guides found in phone camera apps such as Xiaomi's.
   (Off → On → Auto), tap-to-focus on the viewfinder — the same baseline controls found in
   stock camera apps (Xiaomi's Camera app included). The flash toggle hides itself on lenses
   without a flash unit (e.g. most front cameras), matching that behavior.
-- **Pose guide overlay**: 6 bundled minimalist stick-figure silhouettes (Full Body, Portrait,
-  Sitting, Couple, Action, Yoga) plus "None", picked from a horizontally scrollable thumbnail
-  strip above the shutter. The guide can be dragged and pinch-zoomed to align with the subject,
-  and its opacity is adjustable via a slider. The overlay is drawn purely on a Compose canvas
-  layer above `PreviewView` — it is never part of the `ImageCapture` pipeline, so it can never
-  end up baked into a saved photo.
+- **More camera options (Xiaomi-style)**: a top options bar with a rule-of-thirds **grid**
+  toggle, a **self-timer** (Off/3s/10s) with an on-screen countdown, and an **aspect ratio**
+  cycle (Full/4:3/1:1) that dims the viewfinder outside the frame that will actually be saved.
+  CameraX has no native square-capture mode, so 1:1 captures at 4:3 and is center-cropped after
+  saving (`ImageCropUtils`). **Zoom** is available via pinch-to-zoom directly on the viewfinder
+  (a `ScaleGestureDetector` combined with the existing tap-to-focus listener) plus a 1x/2x pill
+  row driven by `CameraInfo.zoomState`/`CameraControl.setZoomRatio`; the 2x pill only appears
+  when the active lens actually supports it.
+- **Pose guide overlay**: 12 bundled minimalist stick-figure silhouettes across four categories
+  — **Studio** (Full Body, Portrait, Sitting, Action, Yoga), **Beach** (Beach Sit, Lookback,
+  Sunset), **Mountain** (Summit, Trail Sit), and **Group** (Couple, Group Selfie) — filterable
+  via a category chip row, picked from a horizontally scrollable thumbnail strip above the
+  shutter. The Beach/Mountain/Group poses are original silhouette compositions inspired by
+  common posing ideas (candid seated shots, golden-hour portraits, overhead group selfies), not
+  copies of any specific photo. The guide can be dragged and pinch-zoomed to align with the
+  subject, and its opacity is adjustable via a slider. The overlay is drawn purely on a Compose
+  canvas layer above `PreviewView` — it is never part of the `ImageCapture` pipeline, so it can
+  never end up baked into a saved photo.
 - **MediaStore saving**: JPEGs are written to `DCIM/Camera` via MediaStore, bridging the
   scoped-storage API (Q+) and the legacy `DATA`-column API (26–28), since minSdk is 26.
   CameraX handles JPEG EXIF orientation automatically; an `OrientationEventListener` keeps
@@ -42,20 +54,24 @@ guides found in phone camera apps such as Xiaomi's.
 app/src/main/java/com/newcamera/app/
 ├── MainActivity.kt              Compose host, edge-to-edge, applies the theme
 ├── camera/
-│   ├── CameraViewModel.kt       Owns CameraX use cases, flash/lens/capture state
-│   └── FlashMode.kt             OFF/ON/AUTO enum + mapping to ImageCapture constants
+│   ├── CameraViewModel.kt       Owns CameraX use cases, flash/lens/zoom/aspect-ratio state
+│   ├── FlashMode.kt             OFF/ON/AUTO enum + mapping to ImageCapture constants
+│   ├── CaptureTimer.kt          OFF/THREE/TEN self-timer enum
+│   └── CaptureAspectRatio.kt    FULL/4:3/1:1 enum + CameraX mapping + crop-mask ratio
 ├── overlay/
-│   ├── PoseGuide.kt             Pose data + lazily-initialized PoseRepository
+│   ├── PoseGuide.kt             Pose + PoseCategory data, lazily-initialized PoseRepository
 │   ├── PoseOverlayState.kt      Pure, immutable pan/zoom/opacity transform state
 │   └── PoseOverlay.kt           Gesture-driven Compose overlay (pan + pinch-zoom)
 ├── ui/
 │   ├── PermissionGate.kt        Runtime permission request + rationale screen
-│   ├── CameraScreen.kt          Wires PreviewView + PoseOverlay + controls together
-│   ├── CameraControls.kt        Shutter/flash/switch buttons, opacity slider, pose selector
+│   ├── CameraScreen.kt          Wires PreviewView + overlays + controls together
+│   ├── CameraControls.kt        Shutter/flash/switch/zoom/top-options/pose-selector controls
+│   ├── CameraOverlays.kt        Grid, aspect-ratio crop mask, timer countdown (visual only)
 │   └── theme/                   Material 3 dark theme
 └── util/
     ├── FileNaming.kt            Pure JPEG filename formatting (unit-testable)
     ├── MediaStoreUtils.kt       MediaStore ContentValues for DCIM/Camera
+    ├── ImageCropUtils.kt        Center-square crop for the 1:1 aspect ratio option
     └── PermissionUtils.kt       Required-permissions logic (varies pre/post API 29)
 ```
 
@@ -94,8 +110,10 @@ Gradle wrapper (Gradle 8.7, AGP 8.5.2, Kotlin 2.0.21).
 
 - **Unit tests** (`app/src/test`, no device needed): `PoseOverlayStateTest` (pan/zoom/opacity
   math and clamping), `FlashModeTest` (cycling + mapping to `ImageCapture` constants),
-  `PoseRepositoryTest` (pose bundle integrity), `FileNamingTest` (filename format),
-  `PermissionUtilsTest` (pre/post API 29 permission set).
+  `CaptureTimerTest` (Off/3s/10s cycling), `CaptureAspectRatioTest` (Full/4:3/1:1 cycling,
+  CameraX mapping, square-crop flag), `PoseRepositoryTest` (pose bundle integrity + category
+  filtering), `FileNamingTest` (filename format), `PermissionUtilsTest` (pre/post API 29
+  permission set).
 - **Instrumented tests** (`app/src/androidTest`, needs a device/emulator):
   `CameraScreenUiTest` (shutter/switch controls exist, pose selector shows entries, selecting
   a pose reveals the opacity slider), `MediaStoreUtilsInstrumentedTest` (ContentValues are
@@ -103,10 +121,15 @@ Gradle wrapper (Gradle 8.7, AGP 8.5.2, Kotlin 2.0.21).
 
 ## Known limitations / next steps
 
-- Pinch-to-zoom on the overlay guide is intentionally not wired to the camera's own optical/
-  digital zoom — they're independent by design per the spec (overlay alignment vs. camera zoom).
-  Wiring a second gesture region for camera zoom when no pose is selected would be a natural
-  follow-up.
+- The overlay's own pinch-to-zoom (for aligning the pose guide) and the camera's pinch-to-zoom
+  (on the bare viewfinder, via `ScaleGestureDetector`) are two independent gesture regions by
+  design: when a pose is selected, the overlay's full-size gesture box takes pinch input for
+  guide alignment; when no pose is selected, pinch reaches the viewfinder's zoom listener
+  instead. Layering "zoom the camera while a guide is also visible" onto the same gesture would
+  need an explicit mode switch to avoid the two interpretations conflicting.
+- Zoom pills only offer 1x/2x (whatever the active lens' `maxZoomRatio` supports) since this
+  app doesn't do multi-lens (ultra-wide) switching — that would need CameraX's extended lens
+  selection APIs, a materially bigger addition.
 - No unit/instrumented test run has actually been executed against these files in this session
   (see the build note above) — please treat this as reviewed-but-unverified code and run the
   test suite as the first step.
